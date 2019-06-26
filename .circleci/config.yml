@@ -1,39 +1,29 @@
-# Java Maven CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-java/ for more details
-#
-version: 2
-jobs:
-  build:
-    docker:
-      # specify the version you desire here
-      - image: circleci/openjdk:8-jdk-browsers
-      
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
-   # working_directory: ~/repo
-
-    environment:
-      # Customize the JVM maximum heap limit
-      PROVAR_HOME: /home/circleci/project/ProvarHome
-      testproject.home: /home/circleci/project/DemoProject
-      testproject.results: /home/circleci/project/DemoProject/Results
-    
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "DemoProject/build.xml" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      # run: echo $PROVAR_HOME $PROVAR_SF_DemoAdmin $PROVAR_SF_DemoAdmin_password        
-      - run: ant -lib $PROVAR_HOME/ant -f DemoProject/build.xml
-      
-      - store_test_results:
-          path: /home/circleci/project/DemoProject/Results
+version: 2.1
+orbs:
+  provardemo: testing_himanshu/provardemo@dev:first
+  
+#jobs:
+#  build:
+#    description: | 
+#      Checkout Code test cases from Git, run test cases and publish report
+#    executor:
+#      name: provardemo/default
+#      tag: "8-jdk-stretch-node-browsers"
+#    steps:
+#      - checkout
+#      - provardemo/setup_provar:
+#          version: "1.9.10.023"
+#          url: "ds76ai6bfmt95.cloudfront.net"
+#      - run: ant -Dprovar.home="/home/circleci/project/Provar_Home" -f DemoProject/build.xml
+           
+workflows:
+  version: 2.1
+  run_all:
+    jobs:
+      - provardemo/run_provar:
+          majorversion: "1.9.10"
+          minorversion: "02"
+          url: "dz0x2gbxn8w5x.cloudfront.net"
+          name: running test cases using ant
+          steps:
+            - run: ant -Dprovar.home="/home/circleci/project/Provar_Home" -f DemoProject/build.xml
